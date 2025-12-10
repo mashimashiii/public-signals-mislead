@@ -1,0 +1,38 @@
+feature_name,company,launch_date,search_decay,total_mentions,positive_ratio,negative_ratio,neutral_ratio,avg_score,sentiment_label,positive_count,negative_count,neutral_count,classification,explanation
+Extra Member,Netflix,2023-02-01,0.54,12,0.0,0.0,1.0,11.583333333333334,mixed,0.0,0.0,12.0,UNCERTAIN,"Mixed signals: 54.0% decay, mixed sentiment, 12 mentions."
+Downloads Feature Update,Netflix,2021-11-03,0.67,10,0.0,0.4,0.6,6.1,mixed,0.0,4.0,6.0,UNCERTAIN,"Mixed signals: 67.0% decay, mixed sentiment, 10 mentions."
+Games,Netflix,2021-11-02,0.7628571428571428,1,0.0,0.0,1.0,15.0,mixed,0.0,0.0,1.0,LOW_AWARENESS,High search decay with few Reddit mentions suggests the feature never gained traction.
+Ad-Supported Tier,Netflix,2022-11-03,0.8207142857142857,12,0.25,0.1666666666666666,0.5833333333333334,182.91666666666663,mixed,3.0,2.0,7.0,UNCERTAIN,"Mixed signals: 82.1% decay, mixed sentiment, 12 mentions."
+Password Sharing Crackdown,Netflix,2023-05-23,0.9328571428571428,37,0.1081081081081081,0.2972972972972973,0.5945945945945946,19.594594594594593,mixed,4.0,11.0,22.0,UNCERTAIN,"Mixed signals: 93.3% decay, mixed sentiment, 37 mentions."
+Spatial Audio,Netflix,2022-07-07,1.0,12,0.1666666666666666,0.0,0.8333333333333334,59.666666666666664,mixed,2.0,0.0,10.0,UNCERTAIN,"Mixed signals: 100.0% decay, mixed sentiment, 12 mentions."
+Profile Transfer,Netflix,2022-10-17,1.0,10,0.2,0.0,0.8,26.2,mixed,2.0,0.0,8.0,UNCERTAIN,"Mixed signals: 100.0% decay, mixed sentiment, 10 mentions."
+Audiobooks,Spotify,2023-09-13,0.74,31,0.2580645161290322,0.064516129032258,0.6774193548387096,302.35483870967744,mixed,8.0,2.0,21.0,UNCERTAIN,"Mixed signals: 74.0% decay, mixed sentiment, 31 mentions."
+AI DJ,Spotify,2023-02-22,0.8885714285714286,22,0.2727272727272727,0.0909090909090909,0.6363636363636364,107.95454545454544,mixed,6.0,2.0,14.0,UNCERTAIN,"Mixed signals: 88.9% decay, mixed sentiment, 22 mentions."
+Daylist,Spotify,2023-09-12,0.98,33,0.3636363636363636,0.0606060606060606,0.5757575757575758,64.96969696969697,mixed,12.0,2.0,19.0,UNCERTAIN,"Mixed signals: 98.0% decay, mixed sentiment, 33 mentions."
+Wrapped AI Podcast,Spotify,2024-12-04,1.0,114,0.4736842105263157,0.0964912280701754,0.4298245614035088,90.7280701754386,mixed,54.0,11.0,49.0,UNCERTAIN,"Mixed signals: 100.0% decay, mixed sentiment, 114 mentions."
+Premium Price Increase,Spotify,2023-07-24,1.0,26,0.4615384615384615,0.0769230769230769,0.4615384615384615,199.23076923076923,mixed,12.0,2.0,12.0,UNCERTAIN,"Mixed signals: 100.0% decay, mixed sentiment, 26 mentions."
+AI Playlist,Spotify,2024-04-07,0.92,19,0.2105263157894736,0.3157894736842105,0.4736842105263157,4.368421052631579,mixed,4.0,6.0,9.0,UNCERTAIN,"Mixed signals: 92.0% decay, mixed sentiment, 19 mentions."
+ESPN Integration,Disney+,2024-12-04,0.8871428571428571,36,0.0,0.0555555555555555,0.9444444444444444,60.388888888888886,mixed,0.0,2.0,34.0,UNCERTAIN,"Mixed signals: 88.7% decay, mixed sentiment, 36 mentions."
+Star Content Hub,Disney+,2021-02-23,0.9214285714285714,58,0.3103448275862069,0.0689655172413793,0.6206896551724138,33.5,mixed,18.0,4.0,36.0,UNCERTAIN,"Mixed signals: 92.1% decay, mixed sentiment, 58 mentions."
+IMAX Enhanced,Disney+,2021-11-12,0.9842857142857144,108,0.074074074074074,0.1111111111111111,0.8148148148148148,59.93518518518518,mixed,8.0,12.0,88.0,UNCERTAIN,"Mixed signals: 98.4% decay, mixed sentiment, 108 mentions."
+Downloads Offline,Disney+,2019-11-12,1.0,23,0.0,0.2608695652173913,0.7391304347826086,9.782608695652174,mixed,0.0,6.0,17.0,UNCERTAIN,"Mixed signals: 100.0% decay, mixed sentiment, 23 mentions."
+GroupWatch,Disney+,2020-09-29,1.0,12,0.0,0.4166666666666667,0.5833333333333334,83.91666666666667,mixed,0.0,5.0,7.0,UNCERTAIN,"Mixed signals: 100.0% decay, mixed sentiment, 12 mentions."
+Parental Controls Update,Disney+,2021-03-26,1.0,10,0.0,0.6,0.4,2.7,negative,0.0,6.0,4.0,ABANDONMENT,High search decay with negative sentiment indicates users tried the feature but gave up.
+Unlimited DVR,YouTube TV,2019-06-01,0.6828571428571428,9,0.0,0.1111111111111111,0.8888888888888888,1.1111111111111112,mixed,0.0,1.0,8.0,UNCERTAIN,"Mixed signals: 68.3% decay, mixed sentiment, 9 mentions."
+Price Increase,YouTube TV,2023-03-16,0.8828571428571429,44,0.2727272727272727,0.0909090909090909,0.6363636363636364,59.40909090909091,mixed,12.0,4.0,28.0,UNCERTAIN,"Mixed signals: 88.3% decay, mixed sentiment, 44 mentions."
+Multiview,YouTube TV,2023-10-01,0.9,15,0.0666666666666666,0.2,0.7333333333333333,4.0,mixed,1.0,3.0,11.0,UNCERTAIN,"Mixed signals: 90.0% decay, mixed sentiment, 15 mentions."
+Background Play,YouTube Premium,2014-11-12,0.5057142857142857,0,0.0,0.0,0.0,0.0,unknown,,,,UNCERTAIN,"Mixed signals: 50.6% decay, unknown sentiment, 0 mentions."
+Offline Downloads,YouTube Premium,2014-11-12,0.6714285714285714,0,0.0,0.0,0.0,0.0,unknown,,,,UNCERTAIN,"Mixed signals: 67.1% decay, unknown sentiment, 0 mentions."
+Queue Management,YouTube Premium,2023-03-15,1.0,7,0.0,0.5714285714285714,0.4285714285714285,81.85714285714286,negative,0.0,4.0,3.0,ABANDONMENT,High search decay with negative sentiment indicates users tried the feature but gave up.
+Sing Feature,Apple Music,2022-12-13,0.8785714285714286,34,0.2352941176470588,0.0,0.7647058823529411,24.5,mixed,8.0,0.0,26.0,UNCERTAIN,"Mixed signals: 87.9% decay, mixed sentiment, 34 mentions."
+Lossless Audio,Apple Music,2021-06-07,0.9057142857142856,0,0.0,0.0,0.0,0.0,unknown,,,,LOW_AWARENESS,High search decay with few Reddit mentions suggests the feature never gained traction.
+Classical App,Apple Music,2023-03-28,0.98,116,0.3103448275862069,0.2413793103448276,0.4482758620689655,20.017241379310345,mixed,36.0,28.0,52.0,UNCERTAIN,"Mixed signals: 98.0% decay, mixed sentiment, 116 mentions."
+Download to Watch Offline,Paramount+,2023-06-20,1.0,2,1.0,0.0,0.0,1.0,positive,2.0,0.0,0.0,LOW_AWARENESS,High search decay with few Reddit mentions suggests the feature never gained traction.
+Watch Party,Hulu,2020-05-14,0.7642857142857143,12,0.3333333333333333,0.1666666666666666,0.5,18.583333333333332,mixed,4.0,2.0,6.0,UNCERTAIN,"Mixed signals: 76.4% decay, mixed sentiment, 12 mentions."
+Live TV Cloud DVR,Hulu,2023-04-15,1.0,42,0.1428571428571428,0.1666666666666666,0.6904761904761905,4.571428571428571,mixed,6.0,7.0,29.0,UNCERTAIN,"Mixed signals: 100.0% decay, mixed sentiment, 42 mentions."
+Premium Plus Tier,Hulu,2023-10-12,1.0,32,0.0625,0.125,0.8125,5.375,mixed,2.0,4.0,26.0,UNCERTAIN,"Mixed signals: 100.0% decay, mixed sentiment, 32 mentions."
+Strength Training,Peloton,2021-08-01,0.82,0,0.0,0.0,0.0,0.0,unknown,,,,LOW_AWARENESS,High search decay with few Reddit mentions suggests the feature never gained traction.
+Rowing Classes,Peloton,2022-09-15,0.9885714285714288,34,0.4117647058823529,0.0588235294117647,0.5294117647058824,88.97058823529412,mixed,14.0,2.0,18.0,UNCERTAIN,"Mixed signals: 98.9% decay, mixed sentiment, 34 mentions."
+Running Content,Peloton,2023-02-23,1.0,4,0.5,0.0,0.5,266.75,mixed,2.0,0.0,2.0,LOW_AWARENESS,High search decay with few Reddit mentions suggests the feature never gained traction.
+App-Only Membership,Peloton,2015-10-28,1.0,0,0.0,0.0,0.0,0.0,unknown,,,,LOW_AWARENESS,High search decay with few Reddit mentions suggests the feature never gained traction.
+Grok AI,Twitter/X,2023-12-07,1.0,43,0.0,0.2558139534883721,0.7441860465116279,168.25581395348837,mixed,0.0,11.0,32.0,UNCERTAIN,"Mixed signals: 100.0% decay, mixed sentiment, 43 mentions."
