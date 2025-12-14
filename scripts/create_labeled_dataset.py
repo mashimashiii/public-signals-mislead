@@ -1,4 +1,14 @@
-# src/analysis/create_labeled_dataset.py
+"""
+Merge feature inventory with Reddit validation results to create labeled dataset.
+
+Maps Reddit classification to coarse outcome labels:
+- ADOPTION / SUSTAINED_INTEREST → success
+- ABANDONMENT / LOW_AWARENESS → failure
+- NO_DECAY_DATA → no_decay_data
+- Everything else → inconclusive
+
+Usage: python scripts/create_labeled_dataset.py
+"""
 
 from pathlib import Path
 import pandas as pd
@@ -11,14 +21,7 @@ VALIDATION_DIR = DATA_DIR / "validation"
 
 
 def map_outcome(classification: str) -> str:
-    """
-    Map Reddit classification to a coarse outcome label.
-
-    - ADOPTION / SUSTAINED_INTEREST → success
-    - ABANDONMENT / LOW_AWARENESS   → failure
-    - NO_DECAY_DATA                 → no_decay_data
-    - Everything else               → inconclusive
-    """
+    """Map Reddit classification to coarse outcome label."""
     if classification in ("ADOPTION", "SUSTAINED_INTEREST"):
         return "success"
     if classification in ("ABANDONMENT", "LOW_AWARENESS"):
@@ -37,12 +40,12 @@ def main() -> None:
     inv = pd.read_csv(inventory_path)
     reddit = pd.read_csv(reddit_path)
 
-    # Safe merge on (feature_name, company, launch_date)
+    # Merge on (feature_name, company, launch_date)
     df = inv.merge(
         reddit,
         on=["feature_name", "company", "launch_date"],
         how="inner",
-        validate="one_to_one",
+        validate="one_to_one"
     )
 
     # Derive outcome labels
@@ -53,7 +56,7 @@ def main() -> None:
     out_path = VALIDATION_DIR / "labeled_features.csv"
     df.to_csv(out_path, index=False)
 
-    print(f"✅ Saved labeled dataset: {out_path}")
+    print(f"✓ Saved labeled dataset: {out_path}")
     print("\nOutcome label counts:")
     print(df["outcome_label"].value_counts(dropna=False))
 

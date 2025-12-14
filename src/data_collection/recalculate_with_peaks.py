@@ -5,12 +5,11 @@ Key insight: Features don't peak on launch day. Users discover features when the
 have a reason to care (marketing push, key event, word of mouth).
 
 This script:
-1. Finds the actual peak interest date for each feature
+1. Finds actual peak interest date for each feature
 2. Calculates decay from peak (not from launch)
 3. Provides accurate stickiness classifications
 
-Usage: (from project root)
-    python src/2_reevaluation/1_recalculate_with_peaks.py --input data/trends/MERGED_trends_data.csv
+Usage: python src/data_collection/recalculate_with_peaks.py --input data/trends/MERGED_trends_data.csv
 """
 
 import pandas as pd
@@ -21,16 +20,7 @@ from typing import Dict, Tuple
 
 
 def find_peak_date(trends_df: pd.DataFrame, feature_name: str) -> Tuple[pd.Timestamp, float]:
-    """
-    Find the date and value of maximum interest for a feature.
-    
-    Args:
-        trends_df: DataFrame with trends data
-        feature_name: Name of feature to analyze
-        
-    Returns:
-        Tuple of (peak_date, peak_interest)
-    """
+    """Find date and value of maximum interest for a feature."""
     feature_data = trends_df[trends_df['feature_name'] == feature_name].copy()
     
     if feature_data.empty:
@@ -40,30 +30,16 @@ def find_peak_date(trends_df: pd.DataFrame, feature_name: str) -> Tuple[pd.Times
     return peak_row['date'], peak_row['interest']
 
 
-def calculate_peak_based_decay(
-    trends_df: pd.DataFrame,
-    feature_name: str,
-    launch_date: pd.Timestamp,
-    peak_date: pd.Timestamp,
-    peak_interest: float
-) -> Dict[str, float]:
+def calculate_peak_based_decay(trends_df: pd.DataFrame, feature_name: str,
+                               launch_date: pd.Timestamp, peak_date: pd.Timestamp,
+                               peak_interest: float) -> Dict[str, float]:
     """
     Calculate decay metrics from PEAK date (not launch date).
-    
-    Args:
-        trends_df: DataFrame with trends data
-        feature_name: Name of feature
-        launch_date: Original launch date from inventory
-        peak_date: Actual date of maximum interest
-        peak_interest: Interest value at peak
-        
-    Returns:
-        Dictionary with decay metrics and classification
+    Returns dict with decay metrics and classification.
     """
     feature_data = trends_df[trends_df['feature_name'] == feature_name].copy()
     feature_data['date'] = pd.to_datetime(feature_data['date'])
     
-    # Calculate days from launch to peak
     days_to_peak = (peak_date - launch_date).days
     
     # Week 4: 21-28 days AFTER peak
@@ -72,7 +48,7 @@ def calculate_peak_based_decay(
         (feature_data['date'] < peak_date + timedelta(days=28))
     ]
     
-    # Week 8: 56-63 days AFTER peak (for longer-term validation)
+    # Week 8: 56-63 days AFTER peak
     week_8_data = feature_data[
         (feature_data['date'] >= peak_date + timedelta(days=56)) & 
         (feature_data['date'] < peak_date + timedelta(days=63))
@@ -93,7 +69,7 @@ def calculate_peak_based_decay(
         week_8_interest = None
         decay_rate_w8 = None
     
-    # Classify based on Week 4 decay (primary metric)
+    # Classify based on Week 4 decay
     if decay_rate_w4 is None or decay_rate_w4 < 0:
         classification = 'unknown'
     elif decay_rate_w4 < 0.30:
@@ -115,15 +91,7 @@ def calculate_peak_based_decay(
 
 
 def recalculate_all_metrics(trends_df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Recalculate metrics for all features using peak-based methodology.
-    
-    Args:
-        trends_df: DataFrame with raw trends data
-        
-    Returns:
-        DataFrame with recalculated metrics
-    """
+    """Recalculate metrics for all features using peak-based methodology."""
     trends_df['date'] = pd.to_datetime(trends_df['date'])
     trends_df['launch_date'] = pd.to_datetime(trends_df['launch_date'])
     
@@ -132,22 +100,15 @@ def recalculate_all_metrics(trends_df: pd.DataFrame) -> pd.DataFrame:
     for feature_name in trends_df['feature_name'].unique():
         feature_data = trends_df[trends_df['feature_name'] == feature_name].iloc[0]
         
-        # Find peak
         peak_date, peak_interest = find_peak_date(trends_df, feature_name)
         
         if peak_date is None:
             continue
         
-        # Calculate decay from peak
         metrics = calculate_peak_based_decay(
-            trends_df,
-            feature_name,
-            feature_data['launch_date'],
-            peak_date,
-            peak_interest
+            trends_df, feature_name, feature_data['launch_date'], peak_date, peak_interest
         )
         
-        # Combine with feature metadata
         result = {
             'feature_id': feature_data['feature_id'],
             'feature_name': feature_name,
@@ -165,17 +126,10 @@ def recalculate_all_metrics(trends_df: pd.DataFrame) -> pd.DataFrame:
 
 
 def print_analysis(metrics_df: pd.DataFrame):
-    """
-    Print detailed analysis of recalculated metrics.
+    """Print analysis of recalculated metrics."""
+    print("\nRECALCULATED METRICS - Peak-Based Methodology\n")
     
-    Args:
-        metrics_df: DataFrame with metrics
-    """
-    print("\n" + "="*100)
-    print("📊 RECALCULATED METRICS - Peak-Based Methodology")
-    print("="*100)
-    
-    print(f"\n{'Feature':<35} {'Days to Peak':<15} {'W4 Decay':<12} {'W8 Decay':<12} {'Class':<10}")
+    print(f"{'Feature':<35} {'Days to Peak':<15} {'W4 Decay':<12} {'W8 Decay':<12} {'Class':<10}")
     print("-"*100)
     
     for _, row in metrics_df.iterrows():
@@ -183,58 +137,46 @@ def print_analysis(metrics_df: pd.DataFrame):
         decay_w8 = f"{row['decay_rate_w8']:.1%}" if pd.notna(row['decay_rate_w8']) else "N/A"
         print(f"{row['feature_name']:<35} {row['days_to_peak']:<15} {decay_w4:<12} {decay_w8:<12} {row['classification']:<10}")
     
-    print("\n" + "="*100)
-    print("🎯 CLASSIFICATION BREAKDOWN")
-    print("="*100)
+    print("\nClassification breakdown:")
     print(metrics_df['classification'].value_counts().to_string())
     
-    print("\n" + "="*100)
-    print("📈 KEY STATISTICS")
-    print("="*100)
-    print(f"Average days to peak: {metrics_df['days_to_peak'].mean():.1f}")
-    print(f"Median days to peak: {metrics_df['days_to_peak'].median():.1f}")
-    print(f"Average Week 4 decay: {metrics_df['decay_rate_w4'].mean():.1%}")
-    print(f"Average Week 8 decay: {metrics_df['decay_rate_w8'].mean():.1%}")
+    print("\nKey statistics:")
+    print(f"  Average days to peak: {metrics_df['days_to_peak'].mean():.1f}")
+    print(f"  Median days to peak: {metrics_df['days_to_peak'].median():.1f}")
+    print(f"  Average Week 4 decay: {metrics_df['decay_rate_w4'].mean():.1%}")
+    print(f"  Average Week 8 decay: {metrics_df['decay_rate_w8'].mean():.1%}")
     
-    # Analyze by days to peak
-    print("\n" + "="*100)
-    print("💡 AWARENESS PATTERNS")
-    print("="*100)
-    
+    # Awareness patterns
     immediate = metrics_df[metrics_df['days_to_peak'] <= 7]
     delayed = metrics_df[metrics_df['days_to_peak'] > 7]
     
     if not immediate.empty:
-        print(f"\n✅ Immediate Awareness (peak within 1 week): {len(immediate)} features")
-        print(f"   Average decay: {immediate['decay_rate_w4'].mean():.1%}")
-        print(f"   Classification: {immediate['classification'].value_counts().to_dict()}")
+        print(f"\nImmediate awareness (peak within 1 week): {len(immediate)} features")
+        print(f"  Average decay: {immediate['decay_rate_w4'].mean():.1%}")
+        print(f"  Classification: {immediate['classification'].value_counts().to_dict()}")
     
     if not delayed.empty:
-        print(f"\n⏰ Delayed Awareness (peak >1 week later): {len(delayed)} features")
-        print(f"   Average decay: {delayed['decay_rate_w4'].mean():.1%}")
-        print(f"   Classification: {delayed['classification'].value_counts().to_dict()}")
+        print(f"\nDelayed awareness (peak >1 week later): {len(delayed)} features")
+        print(f"  Average decay: {delayed['decay_rate_w4'].mean():.1%}")
+        print(f"  Classification: {delayed['classification'].value_counts().to_dict()}")
 
 
 def main():
-    """Main execution function."""
+    """Main execution."""
     parser = argparse.ArgumentParser(description='Recalculate metrics using peak dates')
-    parser.add_argument('--input', type=str, required=True,
-                       help='Path to trends data CSV')
+    parser.add_argument('--input', type=str, required=True, help='Path to trends data CSV')
     parser.add_argument('--output', type=str, default=None,
-                       help='Path for output CSV (default: same dir as input with _PEAK suffix)')
+                       help='Path for output CSV (default: input_PEAK_metrics.csv)')
     
     args = parser.parse_args()
     
-    # Load data
     print(f"📂 Loading trends data from: {args.input}")
     trends_df = pd.read_csv(args.input)
     print(f"   Loaded {len(trends_df)} rows for {trends_df['feature_name'].nunique()} features")
     
-    # Recalculate metrics
     print("\n🔄 Recalculating metrics using peak dates...")
     metrics_df = recalculate_all_metrics(trends_df)
     
-    # Print analysis
     print_analysis(metrics_df)
     
     # Save results
@@ -245,7 +187,7 @@ def main():
         output_path = input_path.parent / f"{input_path.stem}_PEAK_metrics.csv"
     
     metrics_df.to_csv(output_path, index=False)
-    print(f"\n✅ Saved to: {output_path}")
+    print(f"\n✓ Saved to: {output_path}")
 
 
 if __name__ == "__main__":

@@ -1,17 +1,14 @@
 """
 Generate all visualizations for the analysis.
+Creates interactive Plotly charts showing key findings.
 
-Creates interactive Plotly charts showing the key findings.
-
-Usage (from project root):
-    python scripts/generate_visualizations.py
+Usage: python scripts/generate_visualizations.py
 """
 
 import pandas as pd
 from pathlib import Path
 import sys
 
-# Add project root to path
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -27,20 +24,15 @@ from src.visualization.charts import (
 def main():
     """Generate all visualizations."""
     
-    print("\n" + "="*80)
-    print("🎨 GENERATING VISUALIZATIONS")
-    print("="*80)
+    print("\nGENERATING VISUALIZATIONS\n")
     
-    # Load labeled data
     csv_path = PROJECT_ROOT / 'data' / 'validation' / 'labeled_features.csv'
     df = pd.read_csv(csv_path)
     
-    print(f"\n📂 Loaded {len(df)} features")
-    print(f"   ✅ Successes: {df['is_success'].sum()}")
-    print(f"   ❌ Failures: {df['is_failure'].sum()}")
+    print(f"📂 Loaded {len(df)} features")
+    print(f"   ✓ {df['is_success'].sum()} successes, ✗ {df['is_failure'].sum()} failures\n")
     
-    # Prepare data for charts
-    # Add required columns if missing
+    # Prepare data
     if 'outcome' not in df.columns:
         df['outcome'] = df['known_outcome'].map({
             'SUCCESS': 'SUCCESS',
@@ -59,62 +51,43 @@ def main():
     if 'success_binary' not in df.columns:
         df['success_binary'] = df['is_success']
     
-    # Create output directory
     output_dir = PROJECT_ROOT / 'results' / 'figures'
     output_dir.mkdir(parents=True, exist_ok=True)
     
-    # 1. Main finding: Decay vs Outcome scatter
-    print("\n1️⃣  Creating decay vs outcome scatter plot...")
+    # 1. Decay vs outcome scatter
+    print("1️⃣ Creating decay vs outcome scatter...")
     try:
-        create_decay_vs_outcome_scatter(
-            df,
-            output_path=str(output_dir / 'decay_vs_outcome.html')
-        )
+        create_decay_vs_outcome_scatter(df, output_path=str(output_dir / 'decay_vs_outcome.html'))
     except Exception as e:
-        print(f"   ❌ Error: {e}")
+        print(f"   ✗ Error: {e}")
     
     # 2. Key examples comparison
-    print("\n2️⃣  Creating divergence comparison...")
-    key_examples = [
-        'Password Sharing Crackdown',
-        'AI DJ',
-        'Ad-Supported Tier',
-        'Games',
-        'GroupWatch'
-    ]
-    # Filter to only examples that exist in data
+    print("\n2️⃣ Creating divergence comparison...")
+    key_examples = ['Password Sharing Crackdown', 'AI DJ', 'Ad-Supported Tier', 'Games', 'GroupWatch']
     available_examples = [f for f in key_examples if f in df['feature_name'].values]
     
     try:
-        create_divergence_comparison(
-            df,
-            features_to_show=available_examples,
-            output_path=str(output_dir / 'divergence_examples.html')
-        )
+        create_divergence_comparison(df, features_to_show=available_examples,
+                                    output_path=str(output_dir / 'divergence_examples.html'))
     except Exception as e:
-        print(f"   ❌ Error: {e}")
+        print(f"   ✗ Error: {e}")
     
     # 3. Decision matrix
-    print("\n3️⃣  Creating decision matrix heatmap...")
+    print("\n3️⃣ Creating decision matrix...")
     try:
-        create_decision_matrix_heatmap(
-            output_path=str(output_dir / 'decision_matrix.html')
-        )
+        create_decision_matrix_heatmap(output_path=str(output_dir / 'decision_matrix.html'))
     except Exception as e:
-        print(f"   ❌ Error: {e}")
+        print(f"   ✗ Error: {e}")
     
-    # 4. Success by feature type
-    print("\n4️⃣  Creating success rate by type...")
+    # 4. Success by type
+    print("\n4️⃣ Creating success rate by type...")
     try:
-        create_success_rate_by_type(
-            df,
-            output_path=str(output_dir / 'success_by_type.html')
-        )
+        create_success_rate_by_type(df, output_path=str(output_dir / 'success_by_type.html'))
     except Exception as e:
-        print(f"   ❌ Error: {e}")
+        print(f"   ✗ Error: {e}")
     
     # 5. Statistical comparison
-    print("\n5️⃣  Creating statistical comparison...")
+    print("\n5️⃣ Creating statistical comparison...")
     successes = df[df['is_success'] == 1]
     failures = df[df['is_failure'] == 1]
     
@@ -131,23 +104,18 @@ def main():
         }
         
         try:
-            create_statistical_comparison(
-                success_metrics,
-                failure_metrics,
-                output_path=str(output_dir / 'statistical_comparison.html')
-            )
+            create_statistical_comparison(success_metrics, failure_metrics,
+                                         output_path=str(output_dir / 'statistical_comparison.html'))
         except Exception as e:
-            print(f"   ❌ Error: {e}")
+            print(f"   ✗ Error: {e}")
     
-    print("\n" + "="*80)
-    print("✅ VISUALIZATIONS COMPLETE")
-    print("="*80)
+    print("\n✓ VISUALIZATIONS COMPLETE")
     print(f"\n📁 Saved to: {output_dir.relative_to(PROJECT_ROOT)}")
     print("\nCreated files:")
     for file in output_dir.glob('*.html'):
         print(f"   • {file.name}")
     
-    print("\n💡 Open these HTML files in your browser to view interactive charts!")
+    print("\n💡 Open HTML files in browser to view interactive charts")
 
 
 if __name__ == "__main__":

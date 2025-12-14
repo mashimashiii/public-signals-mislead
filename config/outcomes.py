@@ -1,17 +1,11 @@
 """
-Configuration: Known Business Outcomes
-
-This file contains verified business outcomes for features with public metrics.
-All metrics sourced from earnings calls, press releases, or credible third-party reports.
-
+Business outcomes for features with public metrics.
+All metrics from earnings calls, press releases, or credible third-party reports.
 Last updated: December 2025
 """
 
-# Known business outcomes with verifiable metrics
+# Tier 1: Strong success with hard metrics from official sources
 KNOWN_OUTCOMES = {
-    # ========================================================================
-    # TIER 1: STRONG SUCCESS (Hard metrics from official sources)
-    # ========================================================================
     'Password Sharing Crackdown': {
         'outcome': 'SUCCESS',
         'metric': '9.3M paid net additions (Q1 2024)',
@@ -62,9 +56,7 @@ KNOWN_OUTCOMES = {
         'url': 'https://investor.onepeloton.com'
     },
     
-    # ========================================================================
-    # TIER 2: MODERATE SUCCESS (Directional evidence, no hard numbers)
-    # ========================================================================
+    # Tier 2: Moderate success - directional evidence, no hard numbers
     'Audiobooks': {
         'outcome': 'MODERATE_SUCCESS',
         'metric': 'Increased retention and listening hours',
@@ -129,9 +121,7 @@ KNOWN_OUTCOMES = {
         'url': None
     },
     
-    # ========================================================================
-    # TIER 1: CLEAR FAILURES (Discontinued or below expectations)
-    # ========================================================================
+    # Clear failures - discontinued or below expectations
     'Games': {
         'outcome': 'FAILURE',
         'metric': '<1% daily usage (0.5% of subs)',
@@ -163,9 +153,9 @@ KNOWN_OUTCOMES = {
 }
 
 
-# Feature type classification for analysis
+# Feature type classification
 FEATURE_TYPES = {
-    # Monetization features (pricing, tiers, restrictions)
+    # Monetization - pricing, tiers, restrictions
     'Password Sharing Crackdown': 'MONETIZATION',
     'Extra Member': 'MONETIZATION',
     'Ad-Supported Tier': 'MONETIZATION',
@@ -173,14 +163,14 @@ FEATURE_TYPES = {
     'Price Increase': 'MONETIZATION',
     'Premium Plus Tier': 'MONETIZATION',
     
-    # AI/Personalization features
+    # AI and personalization
     'AI DJ': 'AI',
     'AI Playlist': 'AI',
     'Daylist': 'AI',
     'Wrapped AI Podcast': 'AI',
     'Grok AI': 'AI',
     
-    # Content additions (new categories, libraries)
+    # Content additions
     'Star Content Hub': 'CONTENT',
     'Classical App': 'CONTENT',
     'Audiobooks': 'CONTENT',
@@ -189,7 +179,7 @@ FEATURE_TYPES = {
     'Rowing Classes': 'CONTENT',
     'Running Content': 'CONTENT',
     
-    # Utility/UX improvements
+    # Utility and UX improvements
     'Background Play': 'UTILITY',
     'Offline Downloads': 'UTILITY',
     'Downloads Offline': 'UTILITY',
@@ -199,76 +189,45 @@ FEATURE_TYPES = {
     'Profile Transfer': 'UTILITY',
     'Parental Controls Update': 'UTILITY',
     
-    # Social/Collaborative features
+    # Social and collaborative
     'GroupWatch': 'SOCIAL',
     'Watch Party': 'SOCIAL',
     'Multiview': 'SOCIAL',
     
-    # Technical quality improvements
+    # Technical quality
     'IMAX Enhanced': 'TECH',
     'Spatial Audio': 'TECH',
     'Lossless Audio': 'TECH',
     'Dolby Atmos': 'TECH',
     'Sing Feature': 'TECH',
     
-    # Live/Sports features
+    # Live and sports
     'Live Sports': 'LIVE',
     'Unlimited DVR': 'LIVE',
     'Live TV Cloud DVR': 'LIVE',
     
-    # Gaming
     'Games': 'GAMES',
-    
-    # Other/Uncategorized
     'App-Only Membership': 'OTHER',
 }
 
 
 def get_outcome(feature_name: str) -> dict:
-    """
-    Get business outcome for a feature.
-    
-    Args:
-        feature_name: Name of the feature
-        
-    Returns:
-        Dictionary with outcome, metric, source, tier
-        Empty dict if feature not found
-    """
+    """Get business outcome for a feature. Returns empty dict if not found."""
     return KNOWN_OUTCOMES.get(feature_name, {})
 
 
 def get_feature_type(feature_name: str) -> str:
-    """
-    Get feature type classification.
-    
-    Args:
-        feature_name: Name of the feature
-        
-    Returns:
-        Feature type string (e.g., 'MONETIZATION', 'AI', 'CONTENT')
-        'UNKNOWN' if not classified
-    """
+    """Get feature type classification. Returns 'UNKNOWN' if not classified."""
     return FEATURE_TYPES.get(feature_name, 'UNKNOWN')
 
 
 def get_all_labeled_features() -> list:
-    """
-    Get list of all features with known outcomes.
-    
-    Returns:
-        List of feature names
-    """
+    """Get list of all features with known outcomes."""
     return list(KNOWN_OUTCOMES.keys())
 
 
 def get_success_count() -> dict:
-    """
-    Count features by outcome type.
-    
-    Returns:
-        Dictionary with counts by outcome type
-    """
+    """Count features by outcome type."""
     counts = {}
     for outcome_data in KNOWN_OUTCOMES.values():
         outcome = outcome_data['outcome']

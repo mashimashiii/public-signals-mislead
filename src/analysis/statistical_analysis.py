@@ -1,7 +1,5 @@
 """
-Statistical Analysis Module
-
-Tests whether search decay and other public signals predict feature success.
+Statistical tests for whether search decay and other public signals predict feature success.
 Key finding (expected): They don't. Success and failure show similar decay patterns.
 """
 
@@ -15,51 +13,35 @@ from scipy import stats
 
 def load_labeled_data(path: str = "data/validation/labeled_features.csv") -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """
-    Load labeled data and separate into success/failure groups.
-
-    We support two label schemas:
-      - is_success / is_failure (preferred, from create_labeled_dataset.py)
-      - success_binary (legacy: 1=success, 0=failure)
-
-    Returns:
-        (successes_df, failures_df, full_df)
+    Load labeled data and split into success/failure groups.
+    Supports two label schemas: is_success/is_failure or success_binary.
     """
     df = pd.read_csv(path)
 
     if "is_success" in df.columns:
         successes = df[df["is_success"] == 1].copy()
-        if "is_failure" in df.columns:
-            failures = df[df["is_failure"] == 1].copy()
-        else:
-            failures = df[df["outcome_label"] == "failure"].copy()
+        failures = df[df["is_failure"] == 1].copy() if "is_failure" in df.columns else df[df["outcome_label"] == "failure"].copy()
         label_col = "is_success"
     elif "success_binary" in df.columns:
         successes = df[df["success_binary"] == 1].copy()
         failures = df[df["success_binary"] == 0].copy()
         label_col = "success_binary"
     else:
-        raise ValueError(
-            "No success label column found. Expected 'is_success' or 'success_binary' "
-            f"in columns {list(df.columns)}"
-        )
+        raise ValueError(f"No success label column found. Expected 'is_success' or 'success_binary' in {list(df.columns)}")
 
-    # Keep the label column name on the frame for later
     df["_success_label_col"] = label_col
-
     return successes, failures, df
 
 
 def _ttest_groups(x: np.ndarray, y: np.ndarray) -> Tuple[float, float]:
-    """Helper: robust t-test that returns (nan, nan) if any group is empty."""
+    """Run t-test. Returns (nan, nan) if either group is empty."""
     if len(x) == 0 or len(y) == 0:
         return np.nan, np.nan
-    return stats.ttest_ind(x, y, equal_var=False)  # Welch t-test
+    return stats.ttest_ind(x, y, equal_var=False)
 
 
 def test_decay_difference(successes: pd.DataFrame, failures: pd.DataFrame) -> Dict:
-    """
-    Test if successful features have different search decay than failures.
-    """
+    """Test if successful features have different search decay than failures."""
     success_decay = successes["search_decay"].values
     failure_decay = failures["search_decay"].values
 
@@ -95,9 +77,7 @@ def test_decay_difference(successes: pd.DataFrame, failures: pd.DataFrame) -> Di
 
 
 def test_mentions_difference(successes: pd.DataFrame, failures: pd.DataFrame) -> Dict:
-    """
-    Test if successful features have different Reddit engagement (total mentions).
-    """
+    """Test if successful features have different Reddit engagement."""
     success_mentions = successes["total_mentions"].values
     failure_mentions = failures["total_mentions"].values
 
@@ -132,9 +112,7 @@ def test_mentions_difference(successes: pd.DataFrame, failures: pd.DataFrame) ->
 
 
 def test_sentiment_difference(successes: pd.DataFrame, failures: pd.DataFrame) -> Dict:
-    """
-    Test if successful features have different negative sentiment.
-    """
+    """Test if successful features have different negative sentiment."""
     success_negative = successes["negative_ratio"].values
     failure_negative = failures["negative_ratio"].values
 
@@ -161,34 +139,20 @@ def test_sentiment_difference(successes: pd.DataFrame, failures: pd.DataFrame) -
 
 
 def calculate_correlations(df: pd.DataFrame) -> pd.Series:
-    """
-    Calculate correlation of each feature with success.
-
-    Uses whichever success label column exists.
-    """
-    candidate_cols = [
-        "search_decay",
-        "total_mentions",
-        "negative_ratio",
-        "positive_ratio",
-        "neutral_ratio",
-        "avg_score",
-    ]
+    """Calculate correlation of each feature with success."""
+    candidate_cols = ["search_decay", "total_mentions", "negative_ratio", "positive_ratio", "neutral_ratio", "avg_score"]
     feature_cols = [c for c in candidate_cols if c in df.columns]
 
     if not feature_cols:
         return pd.Series(dtype=float)
 
     label_col = df["_success_label_col"].iloc[0]
-
     corr = df[feature_cols + [label_col]].corr()[label_col].drop(label_col)
     return corr.sort_values(key=lambda x: x.abs(), ascending=False)
 
 
 def find_high_decay_successes(successes: pd.DataFrame, threshold: float = 0.80) -> pd.DataFrame:
-    """
-    Find successful features with high search decay.
-    """
+    """Find successful features with high search decay."""
     if "search_decay" not in successes.columns:
         return successes.iloc[0:0].copy()
     return successes[successes["search_decay"] > threshold].copy()
@@ -219,25 +183,17 @@ def interpret_correlation(corr: float) -> str:
 
 
 def run_all_tests(labeled_path: str = "data/validation/labeled_features.csv") -> Dict:
-    """
-    Run complete statistical analysis.
-    """
+    """Run complete statistical analysis."""
     successes, failures, df = load_labeled_data(labeled_path)
 
     decay_test = test_decay_difference(successes, failures)
     mentions_test = test_mentions_difference(successes, failures)
     sentiment_test = test_sentiment_difference(successes, failures)
-
     correlations = calculate_correlations(df)
-
     high_decay_successes = find_high_decay_successes(successes)
 
     return {
-        "sample_sizes": {
-            "successes": len(successes),
-            "failures": len(failures),
-            "total": len(df),
-        },
+        "sample_sizes": {"successes": len(successes), "failures": len(failures), "total": len(df)},
         "decay_test": decay_test,
         "mentions_test": mentions_test,
         "sentiment_test": sentiment_test,
@@ -251,133 +207,90 @@ def run_all_tests(labeled_path: str = "data/validation/labeled_features.csv") ->
 
 
 def print_results(results: Dict) -> None:
-    """
-    Print statistical results in readable format.
-    """
-    print("=" * 80)
-    print("📊 STATISTICAL ANALYSIS: Search Decay vs Success")
-    print("=" * 80)
-
-    print(f"\n✅ Successes: {results['sample_sizes']['successes']}")
-    print(f"❌ Failures: {results['sample_sizes']['failures']}")
-
+    """Print statistical results."""
     decay = results["decay_test"]
-
-    print("\n" + "=" * 80)
-    print("🧪 TEST 1: Search Decay - Success vs Failure")
-    print("=" * 80)
+    
+    print("\nSTATISTICAL ANALYSIS: Search Decay vs Success")
+    print(f"✓ {results['sample_sizes']['successes']} successes, ✗ {results['sample_sizes']['failures']} failures\n")
 
     if np.isnan(decay["success_mean"]) or np.isnan(decay["failure_mean"]):
-        print("\n⚠️  Not enough data (no successes or no failures) to run this test meaningfully.")
+        print("⚠ Not enough data to run tests (need both successes and failures)\n")
     else:
-        print(f"\n📉 Search Decay Statistics:")
-        print(f"   Successes:  {decay['success_mean']:.1%} (±{decay['success_std']:.1%})")
-        print(f"   Failures:   {decay['failure_mean']:.1%} (±{decay['failure_std']:.1%})")
-        print(f"   Difference: {abs(decay['success_mean'] - decay['failure_mean']):.1%}")
-
-        print(f"\n📊 Independent t-test:")
-        print(f"   t-statistic: {decay['t_statistic']:.3f}")
-        print(f"   p-value: {decay['p_value']:.4f}")
-
+        print("TEST 1: Search Decay - Success vs Failure")
+        print(f"  Successes:  {decay['success_mean']:.1%} (±{decay['success_std']:.1%})")
+        print(f"  Failures:   {decay['failure_mean']:.1%} (±{decay['failure_std']:.1%})")
+        print(f"  Difference: {abs(decay['success_mean'] - decay['failure_mean']):.1%}")
+        print(f"\n  t-statistic: {decay['t_statistic']:.3f}, p-value: {decay['p_value']:.4f}")
+        
         if decay["significant"]:
-            print(f"   ⚠️  RESULT: Significant difference (p={decay['p_value']:.4f} < 0.05)")
+            print(f"  ⚠ Significant difference (p={decay['p_value']:.4f} < 0.05)")
         else:
-            print(f"   ✅ RESULT: No significant difference (p={decay['p_value']:.4f} ≥ 0.05)")
-            print(f"   📌 CONCLUSION: Search decay {decay['conclusion']} distinguish success from failure")
+            print(f"  ✓ No significant difference (p={decay['p_value']:.4f} ≥ 0.05)")
+            print(f"  → Search decay {decay['conclusion']} distinguish success from failure")
+        
+        print(f"  Effect size (Cohen's d): {decay['cohens_d']:.3f} ({decay['effect_size_label']})\n")
 
-        print(f"\n📏 Effect size (Cohen's d): {decay['cohens_d']:.3f} ({decay['effect_size_label']})")
-
-    # Mentions
-    print("\n" + "=" * 80)
-    print("🧪 TEST 2: Reddit Mentions - Success vs Failure")
-    print("=" * 80)
+    # Mentions test
     mentions = results["mentions_test"]
-    print(f"\n💬 Reddit Mentions Statistics:")
-    print(f"   Successes:  {mentions['success_mean']:.1f}")
-    print(f"   Failures:   {mentions['failure_mean']:.1f}")
-    print(f"\n📊 Independent t-test:")
-    print(f"   p-value: {mentions['p_value']:.4f}")
-    print(f"   📌 CONCLUSION: Engagement volume {mentions['conclusion']} distinguish success from failure")
+    print("TEST 2: Reddit Mentions - Success vs Failure")
+    print(f"  Successes: {mentions['success_mean']:.1f}, Failures: {mentions['failure_mean']:.1f}")
+    print(f"  p-value: {mentions['p_value']:.4f}")
+    print(f"  → Engagement volume {mentions['conclusion']} distinguish success from failure\n")
 
-    # Sentiment
-    print("\n" + "=" * 80)
-    print("🧪 TEST 3: Negative Sentiment - Success vs Failure")
-    print("=" * 80)
+    # Sentiment test
     sentiment = results["sentiment_test"]
-    print(f"\n😡 Negative Sentiment:")
-    print(f"   Successes:  {sentiment['success_mean']:.1%}")
-    print(f"   Failures:   {sentiment['failure_mean']:.1%}")
-    print(f"   p-value: {sentiment['p_value']:.4f}")
-    print(f"   📌 CONCLUSION: Negative sentiment {sentiment['conclusion']} distinguish success from failure")
+    print("TEST 3: Negative Sentiment - Success vs Failure")
+    print(f"  Successes: {sentiment['success_mean']:.1%}, Failures: {sentiment['failure_mean']:.1%}")
+    print(f"  p-value: {sentiment['p_value']:.4f}")
+    print(f"  → Negative sentiment {sentiment['conclusion']} distinguish success from failure\n")
 
+    # High decay successes
     high_decay = results["high_decay_successes"]
-    print("\n" + "=" * 80)
-    print("🔥 KEY FINDING: Successes with High Decay")
-    print("=" * 80)
-    print(f"\n✅ Successes with >80% decay: {high_decay['count']} ({high_decay['pct_of_successes']:.0%})")
+    print(f"KEY FINDING: {high_decay['count']} successes with >80% decay ({high_decay['pct_of_successes']:.0%})")
     if high_decay["features"]:
-        print("\nFeatures:")
+        print("  Features:")
         for feature in high_decay["features"]:
-            print(f"   • {feature}")
-    else:
-        print("   (no successful features above threshold / or no successes at all)")
+            print(f"    • {feature}")
+    print()
 
-    print("\n" + "=" * 80)
-    print("📈 CORRELATION ANALYSIS")
-    print("=" * 80)
+    # Correlations
     if results["correlations"]:
-        print(f"\nCorrelation with success:")
+        print("CORRELATION WITH SUCCESS:")
         for feature, corr in results["correlations"].items():
             direction = "↑" if corr > 0 else "↓"
             strength = interpret_correlation(abs(corr))
-            print(f"   {direction} {feature:20s}: {corr:+.3f} ({strength})")
-    else:
-        print("No numeric feature columns available for correlation analysis.")
-
-    print("\n" + "=" * 80)
-    print("🎯 SUMMARY OF FINDINGS")
-    print("=" * 80)
-    print(
-        "\n(Interpretation depends on having at least a few successful features. "
-        "Right now your labeled set has "
-        f"{results['sample_sizes']['successes']} successes and "
-        f"{results['sample_sizes']['failures']} failures.)"
-    )
+            print(f"  {direction} {feature:20s}: {corr:+.3f} ({strength})")
 
 
 def save_results(results: Dict, output_path: str = "data/validation/statistical_results.csv") -> None:
-    """
-    Save core test results to CSV.
-    """
-    df = pd.DataFrame(
-        [
-            {
-                "metric": results["decay_test"]["metric"],
-                "success_mean": results["decay_test"]["success_mean"],
-                "failure_mean": results["decay_test"]["failure_mean"],
-                "p_value": results["decay_test"]["p_value"],
-                "significant": results["decay_test"]["significant"],
-            },
-            {
-                "metric": results["mentions_test"]["metric"],
-                "success_mean": results["mentions_test"]["success_mean"],
-                "failure_mean": results["mentions_test"]["failure_mean"],
-                "p_value": results["mentions_test"]["p_value"],
-                "significant": results["mentions_test"]["significant"],
-            },
-            {
-                "metric": results["sentiment_test"]["metric"],
-                "success_mean": results["sentiment_test"]["success_mean"],
-                "failure_mean": results["sentiment_test"]["failure_mean"],
-                "p_value": results["sentiment_test"]["p_value"],
-                "significant": results["sentiment_test"]["significant"],
-            },
-        ]
-    )
+    """Save core test results to CSV."""
+    df = pd.DataFrame([
+        {
+            "metric": results["decay_test"]["metric"],
+            "success_mean": results["decay_test"]["success_mean"],
+            "failure_mean": results["decay_test"]["failure_mean"],
+            "p_value": results["decay_test"]["p_value"],
+            "significant": results["decay_test"]["significant"],
+        },
+        {
+            "metric": results["mentions_test"]["metric"],
+            "success_mean": results["mentions_test"]["success_mean"],
+            "failure_mean": results["mentions_test"]["failure_mean"],
+            "p_value": results["mentions_test"]["p_value"],
+            "significant": results["mentions_test"]["significant"],
+        },
+        {
+            "metric": results["sentiment_test"]["metric"],
+            "success_mean": results["sentiment_test"]["success_mean"],
+            "failure_mean": results["sentiment_test"]["failure_mean"],
+            "p_value": results["sentiment_test"]["p_value"],
+            "significant": results["sentiment_test"]["significant"],
+        },
+    ])
 
     Path(output_path).parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(output_path, index=False)
-    print(f"\n✅ Saved results to: {output_path}")
+    print(f"\n✓ Saved results to: {output_path}")
 
 
 if __name__ == "__main__":
